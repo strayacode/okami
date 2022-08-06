@@ -5,9 +5,9 @@ ASM := nasm
 LD := ld.lld
 QEMU := qemu-system-i386
 
-CFLAGS := -target i386-none-elf -ffreestanding -Wall -Wextra -nostdlib -c
+CFLAGS := -m32 -target i386-none-elf -ffreestanding -Wall -Wextra -nostdlib -c
 ASMFLAGS := -f elf
-LDFLAGS := -T kernel/linker.ld --oformat=binary
+LDFLAGS := -Ttext 0x7c00 -T kernel/linker.ld --oformat=binary
 QEMUFLAGS := -fda
 
 CFILES := $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.c))

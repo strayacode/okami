@@ -1,22 +1,14 @@
-// #include <stddef.h>
+#include <stddef.h>
+#include <stdint.h>
 
 void kernel_main(void)
 {
-    int i = 0;
-    i++;
-    i++;
-    i++;
-    i++;
-    i++;
-    i++;
-    i++;
-    i++;
-    i++;
-    i++;
-    i++;
-    const short color = 0x0F00;
-    const char* hello = "Hello cpp world!";
-    // short* vga = (short*)0xb8000;
-    // for (int i = 0; i<16;++i)
-    //     vga[i+80] = color | hello[i];
+    const uint16_t color = 0x0f00;
+    const char *str = "Hello, World!";
+    uint16_t *vga = (uint16_t *)0xb8000;
+    
+    for (int i = 0; i < 16; i++)
+    {
+        vga[i] = color | str[i];
+    }
 }
