@@ -10,7 +10,7 @@ _start:
     mov ax, 0x3
     int 0x10
 
-    ; load sector to support up to 1024 for bootloader
+    ; load sectors to allow a kernel larger than 512 bytes to run
     mov [disk], dl
     mov ah, 0x2
     mov al, 0x6

@@ -17,25 +17,27 @@ HFILES := $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.h))
 OFILES := $(patsubst %.c,$(OUTDIR)/%.o,$(CFILES))
 OFILES += $(patsubst %.s,$(OUTDIR)/%.o,$(ASMFILES))
 
-$(info ofiles is $(OFILES))
+.SILENT: create_build_dirs
 
-.SILENT: dirs
-
-$(OUTDIR)/kernel/boot.o: kernel/boot.s
-	$(ASM) $(ASMFLAGS) $< -o $@ 
-
-$(OUTDIR)/%.o: %.c
-	$(CC) $(CFLAGS) $< -o $@
-
-dirs:
+create_build_dirs:
+	mkdir -p $(OUTDIR); \
 	for dir in $(SOURCES); \
 	do \
 	mkdir -p $(OUTDIR)/$$dir; \
 	done
 
-all: $(OFILES) | dirs
-	$(info    VAR is $(OFILES))
+kernel.bin: $(OFILES)
+	$(info ofiles is $(OFILES))
+
 	$(LD) $(LDFLAGS) $^ -o kernel.bin
+
+all: kernel.bin create_build_dirs
+
+$(OUTDIR)/%.o: %.s
+	$(ASM) $(ASMFLAGS) $< -o $@ 
+
+$(OUTDIR)/%.o: %.c
+	$(CC) $(CFLAGS) $< -o $@
 
 qemu:
 	$(QEMU) $(QEMUFLAGS) kernel.bin
