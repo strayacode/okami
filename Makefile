@@ -19,19 +19,17 @@ OFILES += $(patsubst %.s,$(OUTDIR)/%.o,$(ASMFILES))
 
 .SILENT: create_build_dirs
 
+all: create_build_dirs kernel 
+
+kernel: $(OFILES)
+	$(LD) $(LDFLAGS) $^ -o kernel.bin
+
 create_build_dirs:
 	mkdir -p $(OUTDIR); \
 	for dir in $(SOURCES); \
 	do \
 	mkdir -p $(OUTDIR)/$$dir; \
 	done
-
-kernel.bin: $(OFILES)
-	$(info ofiles is $(OFILES))
-
-	$(LD) $(LDFLAGS) $^ -o kernel.bin
-
-all: kernel.bin create_build_dirs
 
 $(OUTDIR)/%.o: %.s
 	$(ASM) $(ASMFLAGS) $< -o $@ 
