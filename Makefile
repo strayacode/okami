@@ -1,4 +1,4 @@
-OUTDIR := build
+BUILDDIR := build
 SOURCES := kernel
 CC := clang
 ASM := nasm
@@ -14,28 +14,28 @@ CFILES := $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.c))
 ASMFILES := $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.s))
 
 HFILES := $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.h))
-OFILES := $(patsubst %.c,$(OUTDIR)/%.o,$(CFILES))
-OFILES += $(patsubst %.s,$(OUTDIR)/%.o,$(ASMFILES))
+OFILES := $(patsubst %.c,$(BUILDDIR)/%.o,$(CFILES))
+OFILES += $(patsubst %.s,$(BUILDDIR)/%.o,$(ASMFILES))
 
 .SILENT: create_build_dirs
 
 all: create_build_dirs kernel 
 
 kernel: $(OFILES)
-	$(LD) $(LDFLAGS) $^ -o kernel.bin
+	$(LD) $(LDFLAGS) $^ -o $(BUILDDIR)/kernel.bin
 
 create_build_dirs:
-	mkdir -p $(OUTDIR); \
+	mkdir -p $(BUILDDIR); \
 	for dir in $(SOURCES); \
 	do \
-	mkdir -p $(OUTDIR)/$$dir; \
+	mkdir -p $(BUILDDIR)/$$dir; \
 	done
 
-$(OUTDIR)/%.o: %.s
+$(BUILDDIR)/%.o: %.s
 	$(ASM) $(ASMFLAGS) $< -o $@ 
 
-$(OUTDIR)/%.o: %.c
+$(BUILDDIR)/%.o: %.c
 	$(CC) $(CFLAGS) $< -o $@
 
 qemu:
-	$(QEMU) $(QEMUFLAGS) kernel.bin
+	$(QEMU) $(QEMUFLAGS) $(BUILDDIR)/kernel.bin
