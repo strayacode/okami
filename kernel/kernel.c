@@ -1,7 +1,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-void kernel_main(void)
+void kmain(void)
 {
     const uint16_t color = 0x0f00;
     const char *str = "Hello, World!";

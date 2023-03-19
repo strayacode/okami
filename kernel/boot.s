@@ -1,97 +1,55 @@
-section .boot
-bits 16
-global _start
-_start:
-    ; enable the a20 line
-    mov ax, 0x2401
-    int 0x15
-    
-    ; set vga text mode to safe value
-    mov ax, 0x3
-    int 0x10
+; declare multiboot header
+; align all boot modules on 4kb page boundaries
+PAGE_ALIGN equ 1
 
-    ; load sectors to allow a kernel larger than 512 bytes to run
-    mov [disk], dl
-    mov ah, 0x2
-    mov al, 0x6
-    mov ch, 0x0
-    mov dh, 0x0
-    mov cl, 0x2
-    mov dl, [disk]
-    mov bx, start_protected_mode
-    int 0x13
+; get memory information
+MEM_INFO equ 1 << 1
 
-    ; disable interrupts
-    cli
+; flags
+FLAGS equ PAGE_ALIGN | MEM_INFO
 
-    ; load the gdt
-    lgdt [gdt]
+; multiboot magic number
+MAGIC equ 0x1BADB002
 
-    ; enable protected mode
-    mov eax, cr0
-    or eax, 0x1
-    mov cr0, eax
+; checksum of multiboot header
+CHECKSUM equ -(MAGIC + FLAGS)
 
-    ; load rest of segment registers
-    mov ax, DATA_SEG
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    mov ss, ax
+; declare the multiboot header in the multiboot section
+section .multiboot
+align 4
+dd MAGIC
+dd FLAGS
+dd CHECKSUM
 
-    ; far jump to the code segment
-    jmp CODE_SEG:start_protected_mode
-
-gdt_start:
-gdt_null_descriptor:
-    dq 0x0
-
-gdt_code_descriptor:
-    dw 0xffff
-    dw 0x0
-    db 0x0
-    db 10011010b
-    db 11001111b
-    db 0x0
-
-gdt_data_descriptor:
-    dw 0xffff
-    dw 0x0
-    db 0x0
-    db 10010010b
-    db 11001111b
-    db 0x0
-
-gdt_end:
-gdt:
-    dw gdt_end - gdt_start
-    dd gdt_start
-
-disk:
-    db 0x0
-
-CODE_SEG equ gdt_code_descriptor - gdt_start
-DATA_SEG equ gdt_data_descriptor - gdt_start
-
-times 510 - ($ - $$) db 0
-dw 0xaa55
-
-bits 32
-start_protected_mode:
-    mov esp, stack_top
-    
-    extern kernel_main
-    call kernel_main
-
-    cli
-
-loop:
-    hlt
-    jmp loop
-
+; allocate a small 16kb stack with a bss section
+; this allows the object file to be smaller, as the stack
+; doesn't need to be initialised
+; the stack must also be 16-byte aligned
 section .bss
 align 16
 stack_bottom:
     resb 16384
 stack_top:
+
+section .text
+global _start
+_start:
+    ; make the stack pointer point to the top of the stack
+    mov esp, stack_top
+
+    ; call into our c code for the kernel
+    extern kmain
+    ; call kmain
+
+    mov ebx, 0xb8000
+    mov eax, ( 4 << 8 | 0x41)
+    mov [ebx], eax
+
+    ; place the computer into an infinite loop
+    cli
+
+loop:
+    ; halt until an interrupt happens, this will put the cpu into a more
+    ; power efficient state
+    hlt
+    jmp loop

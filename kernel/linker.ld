@@ -1,22 +1,19 @@
 ENTRY(_start)
 
 SECTIONS {
-    . = 0x7c00;
-    .text :
-    {
-        *(.boot)
+    . = 0x100000;
+    .text ALIGN(0x1000): {
+        *(.multiboot)
         *(.text)
     }
-    .rodata :
-    {
+    .rodata ALIGN(0x1000): {
         *(.rodata)
     }
-    .data :
-    {
+    .data ALIGN(0x1000): {
         *(.data)
     }
-    .bss :
-    {
+    .bss ALIGN(0x1000): {
+        *(COMMON)
         *(.bss)
     }
 }

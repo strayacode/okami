@@ -6,9 +6,9 @@ LD := ld.lld
 QEMU := qemu-system-i386
 
 CFLAGS := -m32 -target i386-none-elf -ffreestanding -Wall -Wextra -nostdlib -c
-ASMFLAGS := -f elf
-LDFLAGS := -Ttext 0x7c00 -T kernel/linker.ld --oformat=binary
-QEMUFLAGS := -fda
+ASMFLAGS := -f elf32
+LDFLAGS := -T kernel/linker.ld --oformat=elf
+QEMUFLAGS := -machine type=pc-i440fx-3.1 -kernel
 
 CFILES := $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.c))
 ASMFILES := $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.s))
@@ -22,7 +22,7 @@ OFILES += $(patsubst %.s,$(BUILDDIR)/%.o,$(ASMFILES))
 all: create_build_dirs kernel 
 
 kernel: $(OFILES)
-	$(LD) $(LDFLAGS) $^ -o $(BUILDDIR)/kernel.bin
+	$(LD) $(LDFLAGS) $^ -o $(BUILDDIR)/kernel.elf
 
 create_build_dirs:
 	mkdir -p $(BUILDDIR); \
@@ -38,4 +38,7 @@ $(BUILDDIR)/%.o: %.c
 	$(CC) $(CFLAGS) $< -o $@
 
 qemu:
-	$(QEMU) $(QEMUFLAGS) $(BUILDDIR)/kernel.bin
+	$(QEMU) $(QEMUFLAGS) $(BUILDDIR)/kernel.elf
+
+clean:
+	rm -r $(BUILDDIR)
