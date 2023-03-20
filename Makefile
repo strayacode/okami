@@ -1,5 +1,5 @@
 BUILDDIR := build
-SOURCES := kernel
+SOURCEDIR := kernel
 CC := clang
 ASM := nasm
 LD := ld.lld
@@ -10,12 +10,13 @@ ASMFLAGS := -f elf32
 LDFLAGS := -T kernel/linker.ld --oformat=elf
 QEMUFLAGS := -kernel
 
-CFILES := $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.c))
-ASMFILES := $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.s))
+ARCH := x86
 
-HFILES := $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.h))
+include kernel/kernel.mk
+
 OFILES := $(patsubst %.c,$(BUILDDIR)/%.o,$(CFILES))
-OFILES += $(patsubst %.s,$(BUILDDIR)/%.o,$(ASMFILES))
+OFILES += $(patsubst %.s,$(BUILDDIR)/%.o,$(SFILES))
+DIRS := $(dir $(CFILES) $(SFILES))
 
 .SILENT: create_build_dirs
 
@@ -26,7 +27,7 @@ kernel: $(OFILES)
 
 create_build_dirs:
 	mkdir -p $(BUILDDIR); \
-	for dir in $(SOURCES); \
+	for dir in $(DIRS); \
 	do \
 	mkdir -p $(BUILDDIR)/$$dir; \
 	done
