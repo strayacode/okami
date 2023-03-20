@@ -8,7 +8,7 @@ QEMU := qemu-system-i386
 CFLAGS := -m32 -target i386-none-elf -ffreestanding -Wall -Wextra -nostdlib -c
 ASMFLAGS := -f elf32
 LDFLAGS := -T kernel/linker.ld --oformat=elf
-QEMUFLAGS := -machine type=pc-i440fx-3.1 -kernel
+QEMUFLAGS := -kernel
 
 CFILES := $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.c))
 ASMFILES := $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.s))

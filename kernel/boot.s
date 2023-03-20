@@ -9,15 +9,15 @@ MEM_INFO equ 1 << 1
 FLAGS equ PAGE_ALIGN | MEM_INFO
 
 ; multiboot magic number
-MAGIC equ 0x1BADB002
+MAGIC_NUMBER equ 0x1BADB002
 
 ; checksum of multiboot header
-CHECKSUM equ -(MAGIC + FLAGS)
+CHECKSUM equ -(MAGIC_NUMBER + FLAGS)
 
 ; declare the multiboot header in the multiboot section
-section .multiboot
+section .multiboot:
 align 4
-dd MAGIC
+dd MAGIC_NUMBER
 dd FLAGS
 dd CHECKSUM
 
@@ -39,7 +39,7 @@ _start:
 
     ; call into our c code for the kernel
     extern kmain
-    ; call kmain
+    call kmain
 
     mov ebx, 0xb8000
     mov eax, ( 4 << 8 | 0x41)
