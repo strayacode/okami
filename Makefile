@@ -1,18 +1,17 @@
 BUILDDIR := build
-SOURCEDIR := kernel
 CC := clang
 ASM := nasm
 LD := ld.lld
 QEMU := qemu-system-i386
 
-CFLAGS := -m32 -target i386-none-elf -ffreestanding -Wall -Wextra -nostdlib -c
+CFLAGS := -m32 -target i386-none-elf -ffreestanding -Wall -Wextra -nostdlib -c -Isrc/
 ASMFLAGS := -f elf32
-LDFLAGS := -T kernel/linker.ld --oformat=elf
+LDFLAGS := -T src/kernel/linker.ld --oformat=elf
 QEMUFLAGS := -kernel
 
 ARCH := x86
 
-include kernel/kernel.mk
+include src/kernel/kernel.mk
 
 OFILES := $(patsubst %.c,$(BUILDDIR)/%.o,$(CFILES))
 OFILES += $(patsubst %.s,$(BUILDDIR)/%.o,$(SFILES))

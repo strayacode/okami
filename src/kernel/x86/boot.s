@@ -41,10 +41,6 @@ _start:
     extern kmain
     call kmain
 
-    mov ebx, 0xb8000
-    mov eax, ( 4 << 8 | 0x41)
-    mov [ebx], eax
-
     ; place the computer into an infinite loop
     cli
 
