@@ -2,7 +2,7 @@
 #include "kernel/string.h"
 #include "kernel/x86/vga.h"
 
-#define VGA_BUFFER 0xB8000
+#define VGA_BUFFER 0xb8000
 #define VGA_WIDTH 80
 #define VGA_HEIGHT 25
 
@@ -57,6 +57,8 @@ static void vga_set(char ch, uint8_t colour_code)
     }
 }
 
+// initialise vga text mode
+// this allows us to display characters into a 80x25 grid
 void vga_init(void)
 {
     row = 0;

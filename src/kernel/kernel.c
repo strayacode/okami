@@ -1,12 +1,14 @@
 #include <stddef.h>
 #include <stdint.h>
 #include "kernel/x86/vga.h"
+#include "kernel/x86/gdt.h"
 
 void kmain(void)
 {
-    // initialise vga text mode
-    // this allows us to display characters into a 80x25 grid
     vga_init();
+    vga_print("yugenos startup...\n");
+    vga_print("vga initialised\n");
 
-    vga_print("yugenos startup\n");
+    gdt_init();
+    vga_print("gdt initialised\n");
 }
