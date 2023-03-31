@@ -30,18 +30,15 @@ static int column;
 static int colour_code;
 static uint16_t *buffer;
 
-static uint8_t vga_construct_colour_code(uint8_t fg, uint8_t bg)
-{
+static uint8_t vga_construct_colour_code(uint8_t fg, uint8_t bg) {
     return fg | (bg << 4);
 }
 
-static uint16_t vga_construct_entry(char ch, uint8_t colour_code)
-{
+static uint16_t vga_construct_entry(char ch, uint8_t colour_code) {
     return ch | (colour_code << 8);
 }
 
-static void vga_set(char ch, uint8_t colour_code)
-{
+static void vga_set(char ch, uint8_t colour_code) {
     if (ch == '\n') {
         column = 0;
         row++;
@@ -59,8 +56,7 @@ static void vga_set(char ch, uint8_t colour_code)
 
 // initialise vga text mode
 // this allows us to display characters into a 80x25 grid
-void vga_init(void)
-{
+void vga_init(void) {
     row = 0;
     column = 0;
     colour_code = vga_construct_colour_code(VGA_WHITE, VGA_BLACK);
@@ -73,8 +69,7 @@ void vga_init(void)
     }
 }
 
-void vga_print(const char *msg)
-{
+void vga_print(const char *msg) {
     size_t length = string_length(msg);
     for (size_t i = 0; i < length; i++) {
         vga_set(msg[i], colour_code);

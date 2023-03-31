@@ -51,10 +51,10 @@ loop:
     jmp loop
 
 global gdt_install
-extern gdt
+extern gdtr
 gdt_install:
     cli
-    lgdt [gdt]
+    lgdt [gdtr]
     mov ax, 0x10
     mov ds, ax
     mov es, ax
@@ -64,4 +64,12 @@ gdt_install:
     jmp 0x08:gdt_install2 ; far jump to the code segment
     
 gdt_install2:
+    ret
+
+global idt_install
+extern idtr
+idt_install:
+    lidt [idtr]
+    ; enable interrupts
+    sti
     ret
