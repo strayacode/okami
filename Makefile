@@ -5,7 +5,7 @@ LD := ld.lld
 QEMU := qemu-system-i386
 
 CFLAGS := -m32 -target i386-none-elf -ffreestanding -Wall -Wextra -nostdlib -c -Isrc/
-ASMFLAGS := -f elf32
+ASMFLAGS := -f elf
 LDFLAGS := -T src/kernel/linker.ld --oformat=elf
 QEMUFLAGS := -kernel
 

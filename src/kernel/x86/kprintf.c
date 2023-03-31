@@ -73,7 +73,7 @@ int kprintf(const char *format, ...) {
                 i++;
                 break;
             case 'o':
-                print_number((int)va_arg(args, int), 8);
+                print_number((int)va_arg(args, int), 16);
                 i++;
                 break;
             case 's':
