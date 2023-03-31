@@ -65,11 +65,3 @@ gdt_install:
     
 gdt_install2:
     ret
-
-global idt_install
-extern idtr
-idt_install:
-    lidt [idtr]
-    ; enable interrupts
-    sti
-    ret

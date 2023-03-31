@@ -20,27 +20,59 @@ idt_entry_t idt[256];
 
 idtr_t idtr;
 
-extern void idt_install(void);
+void idt_install(void);
 
-void stub_interrupt_handler(void) {
-    vga_print("interrupt handler\n");
+__attribute__((interrupt))
+void default_exception_handler_no_error(interrupt_frame_t *frame) {
+    for (;;) {}
 }
 
-static void idt_create_entry(int entry, uint32_t handler, uint8_t flags) {
-    idt[entry].handler_low = handler & 0xffff;
+__attribute__((interrupt))
+void default_exception_handler_error(interrupt_frame_t *frame, uint32_t error) {
+    for (;;) {}
+}
+
+__attribute__((interrupt))
+void default_interrupt_handler(interrupt_frame_t *frame) {
+    for (;;) {}
+}
+
+void idt_set_entry(int entry, void *handler, uint8_t flags) {
+    idt[entry].handler_low = (uint32_t)handler & 0xffff;
     idt[entry].cs = 0x08;
     idt[entry].reserved = 0;
     idt[entry].flags = flags;
-    idt[entry].handler_high = (handler >> 16) & 0xffff;
+    idt[entry].handler_high = (uint32_t)handler >> 16;
 }
 
 void idt_init(void) {
-    for (int i = 0; i < 256; i++) {
-        idt_create_entry(i, (uint32_t)&stub_interrupt_handler, 0x8e);
+    // initialise the exception entries
+    for (int i = 0; i < 32; i++) {
+        switch (i) {
+        case 8: case 10: case 11: case 12: case 13: case 14: case 17: case 30:
+            idt_set_entry(i, default_exception_handler_error, TRAP_GATE);
+            break;
+        default:
+            idt_set_entry(i, default_exception_handler_no_error, TRAP_GATE);
+            break;
+        }
+    }
+
+    // initialise the interrupt entries (can be programmed for other interrupts with the pic)
+    for (int i = 32; i < 256; i++) {
+        idt_set_entry(i, default_interrupt_handler, INTERRUPT_GATE);
     }
 
     idtr.size = sizeof(idt) - 1;
     idtr.offset = (uint32_t)&idt;
 
     idt_install();
+}
+
+void idt_install(void) {
+    asm volatile(
+        "lidt %0;"
+        "sti;"
+        : : "m"(idtr)
+    );
 }
