@@ -1,8 +1,7 @@
-#include "kernel/x86/idt.h"
-#include "kernel/x86/vga.h"
+#include "kernel/kstdio.h"
 #include "kernel/x86/interrupts.h"
 
-#define NUM_EXCEPTIONS
+#define NUM_EXCEPTIONS 32
 
 static const char *exception_names[NUM_EXCEPTIONS] = {
     "Division by Zero",
@@ -39,11 +38,8 @@ static const char *exception_names[NUM_EXCEPTIONS] = {
     "Reserved",
 };
 
-__attribute__((interrupt))
-void divide_by_zero_handler(interrupt_frame_t *frame) {
-    for (;;) {}
-}
-
-void interrupts_init(void) {
-
+void fault_handler(register_frame_t *registers) {
+    if (registers->interrupt_number < 32) {
+        kprintf("processor exception occured: %s exception\n", exception_names[registers->interrupt_number]);
+    }
 }
