@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "kernel/x86/gdt.h"
+#include "kernel/x86/vga.h"
 
 typedef struct __attribute__((packed)) {
     uint16_t limit_low;
@@ -9,17 +10,17 @@ typedef struct __attribute__((packed)) {
     uint8_t limit_high : 4;
     uint8_t flags : 4;
     uint8_t base_high;
-} GdtEntry;
+} gdt_entry_t;
 
 typedef struct __attribute__((packed)) {
     uint16_t size;
     uint32_t offset;
-} Gdt;
+} gdt_pointer_t;
 
-void gdt_install(void);
+extern void gdt_install(void);
 
-GdtEntry entries[3];
-Gdt gdt;
+gdt_entry_t entries[3];
+gdt_pointer_t gdt;
 
 static void gdt_create_entry(int entry, uint32_t base, uint32_t limit, uint8_t access, uint8_t flags)
 {
@@ -36,7 +37,6 @@ static void gdt_create_entry(int entry, uint32_t base, uint32_t limit, uint8_t a
 // bootloader is valid for our purposes, so we recreate the mappings
 void gdt_init(void)
 {
-    // TODO: add tss descriptor
     // null descriptor
     gdt_create_entry(0, 0, 0, 0, 0);
     
@@ -44,24 +44,11 @@ void gdt_init(void)
     gdt_create_entry(1, 0, 0xfffff, 0x9a, 0xc);
 
     // data descriptor
-    gdt_create_entry(1, 0, 0xfffff, 0x92, 0xc);
+    gdt_create_entry(2, 0, 0xfffff, 0x92, 0xc);
 
-    gdt.size = sizeof(entries);
+    // TODO: add tss descriptor when we require hardware task switching
+    gdt.size = sizeof(entries) - 1;
     gdt.offset = (uint32_t)&entries;
-    // gdt_install();
-}
 
-void gdt_install(void)
-{
-    asm volatile(
-        "cli;"
-        "lgdt (%0);"
-        "mov 0x10, %%ax;"
-        "mov %%ax, %%ds;"
-        "mov %%ax, %%es;"
-        "mov %%ax, %%fs;"
-        "mov %%ax, %%gs;"
-        "mov %%ax, %%ss;"
-        : : "r"(&gdt)
-    );
+    gdt_install();
 }

@@ -49,3 +49,19 @@ loop:
     ; power efficient state
     hlt
     jmp loop
+
+global gdt_install
+extern gdt
+gdt_install:
+    cli
+    lgdt [gdt]
+    mov ax, 0x10
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
+    jmp 0x08:gdt_install2 ; far jump to the code segment
+    
+gdt_install2:
+    ret

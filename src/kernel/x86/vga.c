@@ -23,7 +23,7 @@ typedef enum {
     VGA_PINK = 13,
     VGA_YELLOW = 14,
     VGA_WHITE = 15,
-} Colour;
+} colour_t;
 
 static int row;
 static int column;
