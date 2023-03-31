@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include "kernel/x86/vga.h"
 #include "kernel/x86/gdt.h"
+#include "kernel/x86/pic.h"
 #include "kernel/x86/idt.h"
 
 void kmain(void)
@@ -12,6 +13,9 @@ void kmain(void)
 
     gdt_init();
     vga_print("gdt initialised\n");
+
+    pic_init();
+    vga_print("pic initialised\n");
 
     idt_init();
     vga_print("idt initialised\n");
