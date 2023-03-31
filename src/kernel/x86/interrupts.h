@@ -25,4 +25,9 @@ typedef struct {
     uint32_t ss;
 } register_frame_t;
 
+typedef void (*isr_t)(register_frame_t *registers);
+
+void install_irq_handler(int index, isr_t handler);
+void uninstall_irq_handler(int index);
+
 #endif

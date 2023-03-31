@@ -3,7 +3,13 @@
 #include "kernel/x86/idt.h"
 #include "kernel/x86/vga.h"
 
-#define NUM_ISRS
+#define NUM_ISRS 256
+
+#define INTERRUPT_GATE 0x8e
+#define TRAP_GATE 0x8f
+
+// this is used specifically for syscall interrupts (syscalls should only be called from userland)
+#define INTERRUPT_USER_GATE 0xee
 
 typedef struct __attribute__((packed)) {
     uint16_t handler_low;
@@ -18,8 +24,6 @@ typedef struct __attribute__((packed)) {
     uint32_t offset;
 } idtr_t;
 
-typedef void (*isr_t)(register_frame_t *registers);
-
 extern isr_t isr_table[NUM_ISRS];
 
 __attribute__((aligned(0x10)))
@@ -29,7 +33,7 @@ idtr_t idtr;
 
 void idt_install(void);
 
-void idt_set_entry(int entry, void *handler, uint8_t flags) {
+static void idt_set_entry(int entry, void *handler, uint8_t flags) {
     idt[entry].handler_low = (uint32_t)handler & 0xffff;
     idt[entry].cs = 0x08;
     idt[entry].reserved = 0;
