@@ -6,8 +6,7 @@
 #include "kernel/x86/pic.h"
 #include "kernel/x86/idt.h"
 
-void kmain(void)
-{
+void kmain(void) {
     vga_init();
     kprintf("okami startup...\n");
     kprintf("vga initialised\n");
@@ -20,4 +19,9 @@ void kmain(void)
 
     idt_init();
     kprintf("idt initialised\n");
+
+    asm volatile("int $0;");
+
+    kprintf("thing %d\n", 1 / 0);
+    kprintf("bad\n");
 }

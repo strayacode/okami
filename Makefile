@@ -11,7 +11,7 @@ QEMUFLAGS := -kernel
 
 ARCH := x86
 
-include src/kernel/kernel.mk
+include src/kernel/Makefile
 
 OFILES := $(patsubst %.c,$(BUILDDIR)/%.o,$(CFILES))
 OFILES += $(patsubst %.s,$(BUILDDIR)/%.o,$(SFILES))

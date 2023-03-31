@@ -4,7 +4,7 @@
 #include "kernel/kstring.h"
 #include "kernel/kstdio.h"
 
-void print_number(int val, int base) {
+static void print_number(int val, int base) {
     static char *digits = "0123456789ABCDEF";
     int buffer[100];
     int i = 0;
@@ -28,7 +28,7 @@ void print_number(int val, int base) {
     }
 }
 
-void print_string(const char *str) {
+static void print_string(const char *str) {
     size_t length = kstrlen(str);
 
     for (size_t i = 0; i < length; i++) {

@@ -24,16 +24,19 @@ void idt_install(void);
 
 __attribute__((interrupt))
 void default_exception_handler_no_error(interrupt_frame_t *frame) {
+    asm volatile("cli; hlt;");
     for (;;) {}
 }
 
 __attribute__((interrupt))
 void default_exception_handler_error(interrupt_frame_t *frame, uint32_t error) {
+    asm volatile("cli; hlt;");
     for (;;) {}
 }
 
 __attribute__((interrupt))
 void default_interrupt_handler(interrupt_frame_t *frame) {
+    asm volatile("cli; hlt;");
     for (;;) {}
 }
 
