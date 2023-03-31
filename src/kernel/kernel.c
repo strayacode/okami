@@ -5,6 +5,7 @@
 #include "kernel/x86/gdt.h"
 #include "kernel/x86/pic.h"
 #include "kernel/x86/idt.h"
+#include "kernel/x86/interrupts.h"
 
 void kmain(void) {
     vga_init();
@@ -20,8 +21,5 @@ void kmain(void) {
     idt_init();
     kprintf("idt initialised\n");
 
-    asm volatile("int $0;");
-
-    kprintf("thing %d\n", 1 / 0);
-    kprintf("bad\n");
+    interrupts_init();
 }

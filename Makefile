@@ -13,8 +13,8 @@ ARCH := x86
 
 include src/kernel/Makefile
 
-OFILES := $(patsubst %.c,$(BUILDDIR)/%.o,$(CFILES))
-OFILES += $(patsubst %.s,$(BUILDDIR)/%.o,$(SFILES))
+OFILES := $(patsubst %.c,$(BUILDDIR)/%.c.o,$(CFILES))
+OFILES += $(patsubst %.s,$(BUILDDIR)/%.s.o,$(SFILES))
 DIRS := $(dir $(CFILES) $(SFILES))
 
 .SILENT: create_build_dirs
@@ -31,10 +31,10 @@ create_build_dirs:
 	mkdir -p $(BUILDDIR)/$$dir; \
 	done
 
-$(BUILDDIR)/%.o: %.s
+$(BUILDDIR)/%.s.o: %.s
 	$(ASM) $(ASMFLAGS) $< -o $@ 
 
-$(BUILDDIR)/%.o: %.c
+$(BUILDDIR)/%.c.o: %.c
 	$(CC) $(CFLAGS) $< -o $@
 
 qemu:
