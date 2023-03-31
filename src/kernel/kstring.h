@@ -3,6 +3,6 @@
 
 #include <stddef.h>
 
-size_t string_length(const char *msg);
+size_t kstrlen(const char *msg);
 
 #endif

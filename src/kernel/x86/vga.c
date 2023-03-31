@@ -1,5 +1,4 @@
 #include <stdint.h>
-#include "kernel/string.h"
 #include "kernel/x86/vga.h"
 
 #define VGA_BUFFER 0xb8000
@@ -69,9 +68,6 @@ void vga_init(void) {
     }
 }
 
-void vga_print(const char *msg) {
-    size_t length = string_length(msg);
-    for (size_t i = 0; i < length; i++) {
-        vga_set(msg[i], colour_code);
-    }
+void vga_putchar(int ch) {
+    vga_set(ch, colour_code);
 }

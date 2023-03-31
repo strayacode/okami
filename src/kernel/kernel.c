@@ -1,5 +1,6 @@
 #include <stddef.h>
 #include <stdint.h>
+#include "kernel/kstdio.h"
 #include "kernel/x86/vga.h"
 #include "kernel/x86/gdt.h"
 #include "kernel/x86/pic.h"
@@ -8,15 +9,15 @@
 void kmain(void)
 {
     vga_init();
-    vga_print("okami startup...\n");
-    vga_print("vga initialised\n");
+    kprintf("okami startup...\n");
+    kprintf("vga initialised\n");
 
     gdt_init();
-    vga_print("gdt initialised\n");
+    kprintf("gdt initialised\n");
 
     pic_init();
-    vga_print("pic initialised\n");
+    kprintf("pic initialised\n");
 
     idt_init();
-    vga_print("idt initialised\n");
+    kprintf("idt initialised\n");
 }
