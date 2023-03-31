@@ -48,7 +48,7 @@ void gdt_init(void)
 
     gdt.size = sizeof(entries);
     gdt.offset = (uint32_t)&entries;
-    gdt_install();
+    // gdt_install();
 }
 
 void gdt_install(void)
@@ -57,11 +57,11 @@ void gdt_install(void)
         "cli;"
         "lgdt (%0);"
         "mov 0x10, %%ax;"
-        "mov ax, %%ds;"
-        "mov ax, %%es;"
-        "mov ax, %%fs;"
-        "mov ax, %%gs;"
-        "mov ax, %%ss;"
+        "mov %%ax, %%ds;"
+        "mov %%ax, %%es;"
+        "mov %%ax, %%fs;"
+        "mov %%ax, %%gs;"
+        "mov %%ax, %%ss;"
         : : "r"(&gdt)
     );
 }

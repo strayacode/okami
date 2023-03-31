@@ -6,7 +6,7 @@
 void kmain(void)
 {
     vga_init();
-    vga_print("yugenos startup...\n");
+    vga_print("okami startup...\n");
     vga_print("vga initialised\n");
 
     gdt_init();
