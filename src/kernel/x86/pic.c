@@ -52,10 +52,35 @@ void pic_init(void) {
 }
 
 void pic_signal_eoi(uint8_t irq) {
-    // kprintf("irq: %d\n", irq);
     if (irq >= 8) {
         outb(PIC1_COMMAND, PIC_EOI);
     }
 
     outb(PIC0_COMMAND, PIC_EOI);
+}
+
+void pic_set_mask(uint8_t irq) {
+    uint16_t port;
+    if (irq < 8) {
+        port = PIC0_DATA;
+    } else {
+        port = PIC1_DATA;
+        irq -= 8;
+    }
+
+    uint8_t mask = inb(port) | (1 << irq);
+    outb(port, mask);
+}
+
+void pic_clear_mask(uint8_t irq) {
+    uint16_t port;
+    if (irq < 8) {
+        port = PIC0_DATA;
+    } else {
+        port = PIC1_DATA;
+        irq -= 8;
+    }
+
+    uint8_t mask = inb(port) & ~(1 << irq);
+    outb(port, mask);
 }

@@ -23,11 +23,11 @@ void kmain(void) {
     idt_init();
     kprintf("idt initialised\n");
 
-    pit_init();
-    kprintf("pit initialised\n");
-
     timer_init();
     kprintf("timer initialised\n");
+
+    pit_init();
+    kprintf("pit initialised\n");
 
     kprintf("initialisation finished\n");
 
