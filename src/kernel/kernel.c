@@ -5,6 +5,9 @@
 #include "kernel/x86/gdt.h"
 #include "kernel/x86/pic.h"
 #include "kernel/x86/idt.h"
+#include "kernel/x86/pit.h"
+#include "kernel/x86/timer.h"
+#include "kernel/x86/asm.h"
 
 void kmain(void) {
     vga_init();
@@ -20,6 +23,19 @@ void kmain(void) {
     idt_init();
     kprintf("idt initialised\n");
 
-    int a = 10;
-    kprintf("%d\n", a / 0);
+    pit_init();
+    kprintf("pit initialised\n");
+
+    timer_init();
+    kprintf("timer initialised\n");
+
+    kprintf("initialisation finished\n");
+
+    // initialisation is done, so we can enable interrupts now
+    sti();
+
+    // TODO: have other processes that will run (e.g. the scheduler)
+    // for now we just busy wait at the end, since we should never return from the kernel
+
+    while (1) {}
 }

@@ -1,5 +1,6 @@
 #include <stddef.h>
 #include "kernel/kstdio.h"
+#include "kernel/x86/asm.h"
 #include "kernel/x86/interrupts.h"
 #include "kernel/x86/pic.h"
 
@@ -55,7 +56,7 @@ void exception_handler(register_frame_t *registers) {
 }
 
 void irq_handler(register_frame_t *registers) {
-    kprintf("pic irq\n");
+    // kprintf("pic irq: %d\n", registers->interrupt_number);
     isr_t handler = irq_table[registers->interrupt_number - 32];
     if (handler) {
         handler(registers);

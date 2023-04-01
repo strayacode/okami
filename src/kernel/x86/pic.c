@@ -1,3 +1,4 @@
+#include "kernel/kstdio.h"
 #include "kernel/x86/asm.h"
 #include "kernel/x86/pic.h"
 
@@ -51,9 +52,10 @@ void pic_init(void) {
 }
 
 void pic_signal_eoi(uint8_t irq) {
-    if (irq < 8) {
-        outb(PIC0_COMMAND, PIC_EOI);
-    } else {
+    // kprintf("irq: %d\n", irq);
+    if (irq >= 8) {
         outb(PIC1_COMMAND, PIC_EOI);
     }
+
+    outb(PIC0_COMMAND, PIC_EOI);
 }

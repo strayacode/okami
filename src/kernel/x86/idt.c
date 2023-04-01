@@ -61,7 +61,6 @@ void idt_init(void) {
 void idt_install(void) {
     asm volatile(
         "lidt %0;"
-        "sti;"
         : : "m"(idtr)
     );
 }
