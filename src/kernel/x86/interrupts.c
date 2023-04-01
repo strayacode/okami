@@ -55,6 +55,7 @@ void exception_handler(register_frame_t *registers) {
 }
 
 void irq_handler(register_frame_t *registers) {
+    kprintf("pic irq\n");
     isr_t handler = irq_table[registers->interrupt_number - 32];
     if (handler) {
         handler(registers);

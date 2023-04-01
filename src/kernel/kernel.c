@@ -19,4 +19,7 @@ void kmain(void) {
 
     idt_init();
     kprintf("idt initialised\n");
+
+    int a = 10;
+    kprintf("%d\n", a / 0);
 }

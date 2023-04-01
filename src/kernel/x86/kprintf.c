@@ -9,6 +9,11 @@ static void print_number(int val, int base) {
     int buffer[100];
     int i = 0;
 
+    if (val == 0) {
+        kputchar('0');
+        return;
+    }
+
     if (base == 10 && val < 0) {
         kputchar('-');
         val = -val;

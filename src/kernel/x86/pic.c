@@ -20,22 +20,30 @@ void pic_init(void) {
 
     // send the init command
     outb(PIC0_COMMAND, PIC_INIT);
+    iowait();
     outb(PIC1_COMMAND, PIC_INIT);
+    iowait();
 
     // specify the offset of pic irqs to processor irqs
     // pic0 takes up irq32-39
     // pic1 takes up irq40-47
     outb(PIC0_DATA, 32);
+    iowait();
     outb(PIC1_DATA, 40);
+    iowait();
 
     // specify how pic0 and pic1 are connected
     // pic1 is connected to irq2 of pic0
     outb(PIC0_DATA, 1 << 2);
+    iowait();
     outb(PIC1_DATA, 2);
+    iowait();
 
     // specify that we are using x86
     outb(PIC0_DATA, 1);
+    iowait();
     outb(PIC1_DATA, 1);
+    iowait();
 
     // restore the initial pic0 and pic1 masks
     outb(PIC0_DATA, pic0_mask);

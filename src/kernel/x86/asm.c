@@ -23,3 +23,7 @@ void cli(void) {
 void sti(void) {
     asm volatile("sti;");
 }
+
+void iowait(void) {
+    outb(0x80, 0);
+}
