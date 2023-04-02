@@ -5,6 +5,9 @@ PAGE_ALIGN equ 1
 ; get memory information
 MEM_INFO equ 1 << 1
 
+; get video information
+VIDEO_INFO equ 1 << 2
+
 ; flags
 FLAGS equ PAGE_ALIGN | MEM_INFO
 

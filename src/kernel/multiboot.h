@@ -42,4 +42,13 @@ typedef struct __attribute__((packed)) {
     uint8_t colour_info[6];
 } multiboot_info_t;
 
+typedef struct __attribute__((packed)) {
+    uint32_t size;
+    uint32_t base_low;
+    uint32_t base_high;
+    uint32_t length_low;
+    uint32_t length_high;
+    uint32_t type;
+} multiboot_mmap_entry_t;
+
 #endif

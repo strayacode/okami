@@ -28,6 +28,23 @@ static bool boot_mbi1(multiboot_info_t *multiboot_ptr) {
     kprintf("mmap address: %x\n", multiboot_ptr->mmap_addr);
     kprintf("mmap length: %x\n", multiboot_ptr->mmap_length);
 
+    for (uint32_t i = 0; i < multiboot_ptr->mmap_length; i += sizeof(multiboot_mmap_entry_t)) {
+        multiboot_mmap_entry_t *entry = (multiboot_mmap_entry_t *)(multiboot_ptr->mmap_addr + i);
+
+        switch (entry->type) {
+        case 1:
+            kprintf("mmap entry: start %x%x | length %x%x | size %x | free\n", entry->base_high, entry->base_low, entry->length_high, entry->length_low, entry->size);
+            break;
+        case 2:
+            kprintf("mmap entry: start %x%x | length %x%x | size %x | reserved\n", entry->base_high, entry->base_low, entry->length_high, entry->length_low, entry->size);
+            break;
+        default:
+            kprintf("mmap entry: start %x%x | length %x%x | size %x | unimplemented\n", entry->base_high, entry->base_low, entry->length_high, entry->length_low, entry->size);
+            break;
+        }
+        
+    }
+
     if (!((multiboot_ptr->flags >> 12) & 0x1)) {
         kprintf("framebuffer support not available\n");
     } else {
