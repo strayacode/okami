@@ -6,12 +6,12 @@
 int ticks = 0;
 
 void timer_callback(register_frame_t *registers) {
-    ticks++;
+    // ticks++;
 
-    if (ticks % 100 == 0) {
-        ticks = 0;
-        kprintf("TICK");
-    }
+    // if (ticks % 100 == 0) {
+    //     ticks = 0;
+    //     kprintf("TICK");
+    // }
 }
 
 void timer_init(void) {

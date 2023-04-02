@@ -9,17 +9,28 @@ MEM_INFO equ 1 << 1
 FLAGS equ PAGE_ALIGN | MEM_INFO
 
 ; multiboot magic number
-MAGIC_NUMBER equ 0x1BADB002
+MAGIC equ 0x1BADB002
 
 ; checksum of multiboot header
-CHECKSUM equ -(MAGIC_NUMBER + FLAGS)
+CHECKSUM equ -(MAGIC + FLAGS)
 
 ; declare the multiboot header in the multiboot section
 section .multiboot:
 align 4
-dd MAGIC_NUMBER
+dd MAGIC
 dd FLAGS
 dd CHECKSUM
+
+dd 0x00000000 ; header_addr
+dd 0x00000000 ; load_addr
+dd 0x00000000 ; load_end_addr
+dd 0x00000000 ; bss_end_addr
+dd 0x00000000 ; entry_addr
+dd 0x00000000 ; mode_type
+dd 640 ; width
+dd 480 ; height
+dd 32 ; depth
+
 
 ; allocate a small 16kb stack with a bss section
 ; this allows the object file to be smaller, as the stack
@@ -39,6 +50,9 @@ _start:
 
     ; call into our c code for the kernel
     extern kmain
+
+    push eax
+    push ebx
     call kmain
 
     ; place the computer into an infinite loop

@@ -1,6 +1,8 @@
 #include <stddef.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include "kernel/kstdio.h"
+#include "kernel/multiboot.h"
 #include "kernel/x86/vga.h"
 #include "kernel/x86/gdt.h"
 #include "kernel/x86/pic.h"
@@ -9,10 +11,54 @@
 #include "kernel/x86/timer.h"
 #include "kernel/x86/asm.h"
 
-void kmain(void) {
+static bool boot_mbi1(multiboot_info_t *multiboot_ptr) {
+    if (!(multiboot_ptr->flags & 0x1)) {
+        kprintf("lower and upper memory not available\n");
+        return false;
+    }
+
+    kprintf("lower memory size: %x\n", multiboot_ptr->mem_lower);
+    kprintf("upper memory size: %x\n", multiboot_ptr->mem_upper);
+
+    if (!((multiboot_ptr->flags >> 6) & 0x1)) {
+        kprintf("invalid memory map supplied\n");
+        return false;
+    }
+
+    kprintf("mmap address: %x\n", multiboot_ptr->mmap_addr);
+    kprintf("mmap length: %x\n", multiboot_ptr->mmap_length);
+
+    if (!((multiboot_ptr->flags >> 12) & 0x1)) {
+        kprintf("framebuffer support not available\n");
+    } else {
+        kprintf("framebuffer address: %x\n", multiboot_ptr->framebuffer_addr);
+        kprintf("framebuffer pitch: %d\n", multiboot_ptr->framebuffer_pitch);
+        kprintf("framebuffer width: %d\n", multiboot_ptr->framebuffer_width);
+        kprintf("framebuffer height: %d\n", multiboot_ptr->framebuffer_height);
+        kprintf("framebuffer bpp: %d\n", multiboot_ptr->framebuffer_bpp);
+        kprintf("framebuffer type: %d\n", multiboot_ptr->framebuffer_type);
+    }
+
+    return true;
+}
+
+void kmain(multiboot_info_t *multiboot_ptr, uint32_t magic) {
     vga_init();
     kprintf("okami startup...\n");
     kprintf("vga initialised\n");
+
+    bool result = false;
+    if (magic == MULTIBOOT1_MAGIC) {
+        result = boot_mbi1(multiboot_ptr);
+    } else {
+        kprintf("bootloader is not multiboot compliant\n");
+        return;
+    }
+
+    if (!result) {
+        kprintf("multiboot init sequence failed\n");
+        return;
+    }
 
     gdt_init();
     kprintf("gdt initialised\n");
