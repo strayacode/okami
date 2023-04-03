@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include "kernel/kstdio.h"
 #include "kernel/multiboot.h"
+#include "kernel/kmalloc.h"
 #include "kernel/x86/vga.h"
 #include "kernel/x86/gdt.h"
 #include "kernel/x86/pic.h"
@@ -10,6 +11,9 @@
 #include "kernel/x86/pit.h"
 #include "kernel/x86/timer.h"
 #include "kernel/x86/asm.h"
+
+extern uint32_t kernel_start;
+extern uint32_t kernel_end;
 
 static bool boot_mbi1(multiboot_info_t *multiboot_ptr) {
     if (!(multiboot_ptr->flags & 0x1)) {
@@ -64,6 +68,9 @@ void kmain(multiboot_info_t *multiboot_ptr, uint32_t magic) {
     kprintf("okami startup...\n");
     kprintf("vga initialised\n");
 
+    kprintf("kernel start: %x\n", &kernel_start);
+    kprintf("kernel end: %x\n", &kernel_end);
+
     bool result = false;
     if (magic == MULTIBOOT1_MAGIC) {
         result = boot_mbi1(multiboot_ptr);
@@ -91,6 +98,9 @@ void kmain(multiboot_info_t *multiboot_ptr, uint32_t magic) {
 
     pit_init();
     kprintf("pit initialised\n");
+
+    kmalloc_init();
+    kprintf("kmalloc initialised\n");
 
     kprintf("initialisation finished\n");
 
