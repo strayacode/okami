@@ -99,7 +99,7 @@ void kmain(multiboot_info_t *multiboot_ptr, uint32_t magic) {
     pit_init();
     kprintf("pit initialised\n");
 
-    kmalloc_init();
+    kmalloc_init((uint32_t)&kernel_end);
     kprintf("kmalloc initialised\n");
 
     kprintf("initialisation finished\n");
