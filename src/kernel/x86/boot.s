@@ -9,7 +9,7 @@ MEM_INFO equ 1 << 1
 VIDEO_INFO equ 1 << 2
 
 ; flags
-FLAGS equ PAGE_ALIGN | MEM_INFO
+FLAGS equ PAGE_ALIGN | MEM_INFO | VIDEO_INFO
 
 ; multiboot magic number
 MAGIC equ 0x1BADB002

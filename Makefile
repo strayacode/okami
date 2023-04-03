@@ -7,7 +7,7 @@ QEMU := qemu-system-i386
 CFLAGS := -m32 -target i386-none-elf -ffreestanding -Wall -Wextra -nostdlib -c -Isrc/
 ASMFLAGS := -f elf
 LDFLAGS := -T src/kernel/linker.ld --oformat=elf
-QEMUFLAGS := -kernel
+QEMUFLAGS := -vga std -kernel
 
 ARCH := x86
 
