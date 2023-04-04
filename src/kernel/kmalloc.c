@@ -2,6 +2,8 @@
 #include "kernel/kstdio.h"
 #include "kernel/kmalloc.h"
 
+#define HEAP_SIZE 1 * MB
+
 // this file contains functionality for dynamic allocation
 uint32_t heap_base;
 

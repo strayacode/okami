@@ -1,5 +1,6 @@
 #include <stdarg.h>
 #include <stddef.h>
+#include <stdint.h>
 #include "kernel/x86/vga.h"
 #include "kernel/kstring.h"
 #include "kernel/kstdio.h"
@@ -22,6 +23,54 @@ static void print_number(int val, int base) {
     while (val) {
         int digit = val % base;
         val /= base;
+        buffer[i++] = digit;
+    }
+
+    i--;
+
+    while (i >= 0) {
+        kputchar(digits[buffer[i]]);
+        i--;
+    }
+}
+
+static void print_hex(uint32_t val) {
+    static char *digits = "0123456789abcdef";
+    int buffer[100];
+    int i = 0;
+
+    if (val == 0) {
+        kputchar('0');
+        return;
+    }
+
+    while (val) {
+        int digit = val % 16;
+        val /= 16;
+        buffer[i++] = digit;
+    }
+
+    i--;
+
+    while (i >= 0) {
+        kputchar(digits[buffer[i]]);
+        i--;
+    }
+}
+
+static void print_hex_upper(uint32_t val) {
+    static char *digits = "0123456789ABCDEF";
+    int buffer[100];
+    int i = 0;
+
+    if (val == 0) {
+        kputchar('0');
+        return;
+    }
+
+    while (val) {
+        int digit = val % 16;
+        val /= 16;
         buffer[i++] = digit;
     }
 
@@ -74,11 +123,15 @@ int kprintf(const char *format, ...) {
                 i++;
                 break;
             case 'x':
-                print_number((int)va_arg(args, int), 16);
+                print_hex((uint32_t)va_arg(args, uint32_t));
+                i++;
+                break;
+            case 'X':
+                print_hex_upper((uint32_t)va_arg(args, uint32_t));
                 i++;
                 break;
             case 'o':
-                print_number((int)va_arg(args, int), 16);
+                print_number((int)va_arg(args, int), 8);
                 i++;
                 break;
             case 's':
