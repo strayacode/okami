@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include "kernel/kstdio.h"
 #include "kernel/multiboot.h"
-#include "kernel/kmalloc.h"
+#include "kernel/pmm.h"
 #include "kernel/x86/vga.h"
 #include "kernel/x86/gdt.h"
 #include "kernel/x86/pic.h"
@@ -21,32 +21,9 @@ static bool boot_mbi1(multiboot_info_t *multiboot_ptr) {
         return false;
     }
 
-    kprintf("lower memory size: %x\n", multiboot_ptr->mem_lower);
-    kprintf("upper memory size: %x\n", multiboot_ptr->mem_upper);
-
     if (!((multiboot_ptr->flags >> 6) & 0x1)) {
         kprintf("invalid memory map supplied\n");
         return false;
-    }
-
-    kprintf("mmap address: %x\n", multiboot_ptr->mmap_addr);
-    kprintf("mmap length: %x\n", multiboot_ptr->mmap_length);
-
-    for (uint32_t i = 0; i < multiboot_ptr->mmap_length; i += sizeof(multiboot_mmap_entry_t)) {
-        multiboot_mmap_entry_t *entry = (multiboot_mmap_entry_t *)(multiboot_ptr->mmap_addr + i);
-
-        switch (entry->type) {
-        case 1:
-            kprintf("mmap entry: start %x%x | length %x%x | size %x | free\n", entry->base_high, entry->base_low, entry->length_high, entry->length_low, entry->size);
-            break;
-        case 2:
-            kprintf("mmap entry: start %x%x | length %x%x | size %x | reserved\n", entry->base_high, entry->base_low, entry->length_high, entry->length_low, entry->size);
-            break;
-        default:
-            kprintf("mmap entry: start %x%x | length %x%x | size %x | unimplemented\n", entry->base_high, entry->base_low, entry->length_high, entry->length_low, entry->size);
-            break;
-        }
-        
     }
 
     if (!((multiboot_ptr->flags >> 12) & 0x1)) {
@@ -67,9 +44,6 @@ void kmain(multiboot_info_t *multiboot_ptr, uint32_t magic) {
     vga_init();
     kprintf("okami startup...\n");
     kprintf("vga initialised\n");
-
-    kprintf("kernel start: %x\n", &kernel_start);
-    kprintf("kernel end: %x\n", &kernel_end);
 
     bool result = false;
     if (magic == MULTIBOOT1_MAGIC) {
@@ -99,8 +73,8 @@ void kmain(multiboot_info_t *multiboot_ptr, uint32_t magic) {
     pit_init();
     kprintf("pit initialised\n");
 
-    kmalloc_init((uint32_t)&kernel_end);
-    kprintf("kmalloc initialised\n");
+    pmm_init((uint32_t)&kernel_end, multiboot_ptr);
+    kprintf("pmm initialised\n");
 
     kprintf("initialisation finished\n");
 
