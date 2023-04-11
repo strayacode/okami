@@ -1,9 +1,9 @@
 ENTRY(_start)
 
 SECTIONS {
-    . = 0x100000;
+    . = 0x7c00;
     .text ALIGN(0x1000): {
-        *(.multiboot)
+        *(.boot)
         *(.text)
     }
     .data ALIGN(0x1000): {

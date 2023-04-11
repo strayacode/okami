@@ -3,13 +3,13 @@ CC := clang
 ASM := nasm
 LD := ld.lld
 QEMU := qemu-system-i386
+ARCH := x86
 
 CFLAGS := -m32 -target i386-none-elf -ffreestanding -Wall -Wextra -nostdlib -c -Isrc/
 ASMFLAGS := -f elf
-LDFLAGS := -T src/kernel/linker.ld --oformat=elf
-QEMUFLAGS := -vga std -kernel
+LDFLAGS := -Ttext 0x7c00 -T src/kernel/$(ARCH)/loader/linker.ld --oformat=binary
+QEMUFLAGS := -vga std -hda
 
-ARCH := x86
 
 include src/kernel/Makefile
 
@@ -22,7 +22,7 @@ DIRS := $(dir $(CFILES) $(SFILES))
 all: create_build_dirs kernel 
 
 kernel: $(OFILES)
-	$(LD) $(LDFLAGS) $^ -o $(BUILDDIR)/kernel.elf
+	$(LD) $(LDFLAGS) $^ -o $(BUILDDIR)/kernel.bin
 
 create_build_dirs:
 	mkdir -p $(BUILDDIR); \
@@ -38,7 +38,7 @@ $(BUILDDIR)/%.c.o: %.c
 	$(CC) $(CFLAGS) $< -o $@
 
 qemu:
-	$(QEMU) $(QEMUFLAGS) $(BUILDDIR)/kernel.elf
+	$(QEMU) $(QEMUFLAGS) $(BUILDDIR)/kernel.bin
 
 clean:
 	rm -r $(BUILDDIR)

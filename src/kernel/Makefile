@@ -1,3 +1,5 @@
 CFILES += $(wildcard src/kernel/*.c)
 CFILES += $(wildcard src/kernel/$(ARCH)/*.c)
+CFILES += $(wildcard src/kernel/$(ARCH)/loader/*.c)
 SFILES += $(wildcard src/kernel/$(ARCH)/*.s)
+SFILES += $(wildcard src/kernel/$(ARCH)/loader/*.s)
