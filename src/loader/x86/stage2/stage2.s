@@ -1,4 +1,7 @@
 _start:
+    mov ax, cs
+    mov ds, ax
+    mov es, ax
     mov si, stage2_str
     call print_string
     jmp $
@@ -22,4 +25,4 @@ print_character:
 print_string_end:
     ret
 
-stage2_str db 'haha', 0
+stage2_str db 'Entered stage2', 0

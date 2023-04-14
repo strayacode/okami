@@ -27,32 +27,47 @@ _start:
     ; 0x500-0x7c00 is considered conventional memory in x86
     ; so we can use that
     mov sp, 0x7c00
+    mov bp, sp
 
     mov si, real_mode_str
     call print_string
-    
-load_stage2:
-    ; load the stage2 bootloader
-    mov ax, 0x7e0
-    mov es, ax ; target segment
-    mov ah, 0x2 ; service for reading sectors
-    mov al, STAGE2_NUM_SECTORS ; number of sectors
-    mov ch, 0x0 ; track number
-    mov cl, 0x2 ; sector number
-    mov dh, 0x0 ; head number
-    mov dl, [disk] ; type of disk (floppy = 0x00, hdd = 0x80)
-    mov bx, 0x0 ; target offset in segment
-    int 0x13
-    jc disk_load_error
+
+    mov bx, 0x9000
+    mov dl, [disk]
+    mov dh, 2
+    call load_stage2
 
     mov si, disk_success_str
     call print_string
 
-    jmp 0x0000:0x7e00
+    jmp 0x0000:0x9000
+    
+load_stage2:
+    pusha
+    push dx
+    mov ah, 0x2 ; service for reading sectors
+    mov al, dh ; number of sectors
+    mov ch, 0x0 ; track number
+    mov cl, 0x2 ; sector number
+    mov dh, 0x0 ; head number
+    int 0x13
+    jc disk_read_error
 
-disk_load_error:
-    mov si, disk_error_str
+    pop dx
+    cmp al, dh
+    jne disk_sectors_error
+    popa
+    ret
+
+disk_read_error:
+    mov si, disk_read_error_str
     call print_string
+    jmp loop
+
+disk_sectors_error:
+    mov si, disk_sectors_error_str
+    call print_string
+    jmp loop
 
 loop:
     hlt
@@ -83,7 +98,8 @@ print_string_end:
     ret
 
 disk_success_str db 'Successfully read disk', 0
-disk_error_str db 'Failed to read disk', 0
+disk_read_error_str db 'Failed to read disk', 0
+disk_sectors_error_str db 'Incorrect amount of sectors read', 0
 real_mode_str db 'Starting in 16-bit real mode...', 0
 
 times 510 - ($ - $$) db 0
