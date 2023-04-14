@@ -1,15 +1,25 @@
-CFILES := $(wildcard src/kernel/*.c)
-CFILES += $(wildcard src/kernel/$(ARCH)/*.c)
-SFILES := $(wildcard src/kernel/$(ARCH)/*.s)
+CFLAGS := -m32 -target i386-none-elf -ffreestanding -Wall -Wextra -nostdlib -c -I..
 
-OFILES := $(patsubst %.c,$(BUILDDIR)/%.c.o,$(CFILES))
-OFILES += $(patsubst %.s,$(BUILDDIR)/%.s.o,$(SFILES))
+CFILES := $(wildcard *.c)
+CFILES += $(wildcard $(ARCH)/*.c)
+SFILES := $(wildcard $(ARCH)/*.s)
+OFILES := $(patsubst %.c,$(BUILDDIR)/src/kernel/%.c.o,$(CFILES))
+OFILES += $(patsubst %.s,$(BUILDDIR)/src/kernel/%.s.o,$(SFILES))
+
+DIRS := src/kernel src/kernel/x86
+LDFLAGS := -Ttext 0x9000 -T $(ARCH)/linker.ld --oformat=binary
 
 all: $(OFILES)
-	# $(LD) $(LDFLAGS) $^ -o $(BUILDDIR)/kernel.bin
+	$(LD) $(LDFLAGS) $^ -o $(BUILDDIR)/kernel.bin
+
+create_build_dirs:
+	for dir in $(DIRS); \
+	do \
+	mkdir -p $(BUILDDIR)/$$dir; \
+	done
 
 $(BUILDDIR)/%.s.o: %.s
 	$(ASM) $(ASMFLAGS) $< -o $@ 
 
-$(BUILDDIR)/%.c.o: %.c
+$(BUILDDIR)/src/kernel/%.c.o: %.c
 	$(CC) $(CFLAGS) $< -o $@

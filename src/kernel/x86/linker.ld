@@ -1,17 +1,19 @@
-ENTRY(_start)
+ENTRY(kmain)
 
 SECTIONS {
-    . = 0x7e00;
+    . = 0x9000;
+    kernel_start = .;
     .text ALIGN(0x1000): {
+        *(.multiboot)
         *(.text)
     }
     .data ALIGN(0x1000): {
         *(.data)
-    }
-    .rodata ALIGN(0x1000): {
         *(.rodata)
     }
     .bss ALIGN(0x1000): {
+        *(COMMON)
         *(.bss)
     }
+    kernel_end = .;
 }

@@ -1,3 +1,5 @@
+STAGE2_NUM_SECTORS equ 1
+
 section .text
 bits 16
 global _start
@@ -33,13 +35,14 @@ _start:
     call print_string
 
     mov bx, 0x7e00
-    mov dh, 2
+    mov dh, STAGE2_NUM_SECTORS
     mov dl, [disk]
     call load_stage2
 
     mov si, disk_success_str
     call print_string
 
+    push dx
     jmp 0x0000:0x7e00
     
 load_stage2:
@@ -72,8 +75,6 @@ disk_sectors_error:
 loop:
     hlt
     jmp loop
-
-STAGE2_NUM_SECTORS equ 1
 
 disk:
     db 0x0

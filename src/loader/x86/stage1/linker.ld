@@ -14,7 +14,4 @@ SECTIONS {
     .bss ALIGN(0x1000): {
         *(.bss)
     }
-    /DISCARD/ : {
-        *(stage2_discard)
-    }
 }
