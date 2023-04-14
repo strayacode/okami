@@ -20,11 +20,17 @@ _start:
     mov gs, ax
     mov ss, ax
 
+    ; initialise the direction flag
+    cld
+
     ; setup the stack to start right below the bootsector
     ; 0x500-0x7c00 is considered conventional memory in x86
     ; so we can use that
     mov sp, 0x7c00
 
+    mov si, real_mode_str
+    call print_string
+    
 load_stage2:
     ; load the stage2 bootloader
     mov ax, 0x7e0
@@ -39,7 +45,10 @@ load_stage2:
     int 0x13
     jc disk_load_error
 
-    jmp 0x7e0:0
+    mov si, disk_success_str
+    call print_string
+
+    jmp 0x0000:0x7e00
 
 disk_load_error:
     mov si, disk_error_str
@@ -73,7 +82,9 @@ print_character:
 print_string_end:
     ret
 
+disk_success_str db 'Successfully read disk', 0
 disk_error_str db 'Failed to read disk', 0
+real_mode_str db 'Starting in 16-bit real mode...', 0
 
 times 510 - ($ - $$) db 0
 dw 0xaa55

@@ -1,10 +1,7 @@
-stage2:
+_start:
     mov si, stage2_str
     call print_string
-
-loop:
-    hlt
-    jmp loop
+    jmp $
 
 print_string:
     ; set mode for printing characters
@@ -25,4 +22,4 @@ print_character:
 print_string_end:
     ret
 
-stage2_str db 'Entered stage2', 0
+stage2_str db 'haha', 0

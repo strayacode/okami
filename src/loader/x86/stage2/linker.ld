@@ -1,0 +1,21 @@
+ENTRY(_start)
+
+SECTIONS {
+    . = 0x7e00;
+    .text ALIGN(0x1000): {
+        *(.boot)
+        *(.text)
+    }
+    .data ALIGN(0x1000): {
+        *(.data)
+    }
+    .rodata ALIGN(0x1000): {
+        *(.rodata)
+    }
+    .bss ALIGN(0x1000): {
+        *(.bss)
+    }
+    /DISCARD/ : {
+        *(stage2_discard)
+    }
+}
