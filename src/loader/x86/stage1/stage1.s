@@ -33,8 +33,8 @@ _start:
     call print_string
 
     mov bx, 0x7e00
+    mov dh, 2
     mov dl, [disk]
-    mov dh, 1
     call load_stage2
 
     mov si, disk_success_str
@@ -95,6 +95,11 @@ print_character:
     jmp print_character
 
 print_string_end:
+    ; print \r\n
+    mov al, 0xd
+    int 0x10
+    mov al, 0xa
+    int 0x10
     ret
 
 disk_success_str db 'Successfully read disk', 0

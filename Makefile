@@ -6,7 +6,7 @@ QEMU := qemu-system-i386
 ARCH := x86
 
 CFLAGS := -m32 -target i386-none-elf -ffreestanding -Wall -Wextra -nostdlib -c -Isrc/
-QEMUFLAGS := -drive file=$(BUILDDIR)/disk.img,index=0,media=disk,format=raw,if=ide
+QEMUFLAGS := -s -drive file=$(BUILDDIR)/disk.img,index=0,media=disk,format=raw,if=ide
 
 STAGE1_SIZE := $(shell stat -f%z $(BUILDDIR)/stage1.bin)
 STAGE2_SIZE := $(shell stat -f%z $(BUILDDIR)/stage2.bin)
@@ -15,7 +15,7 @@ STAGE2_SIZE := $(shell stat -f%z $(BUILDDIR)/stage2.bin)
 
 all: create_build_dirs loader
 	$(info creating disk image...)
-	dd if=/dev/zero of=$(BUILDDIR)/disk.img bs=64M count=1
+	dd if=/dev/zero of=$(BUILDDIR)/disk.img bs=10M count=1
 	dd if=$(BUILDDIR)/stage1.bin of=$(BUILDDIR)/disk.img bs=1 seek=0 count=$(STAGE1_SIZE) conv=notrunc
 	dd if=$(BUILDDIR)/stage2.bin of=$(BUILDDIR)/disk.img bs=1 seek=512 count=$(STAGE2_SIZE) conv=notrunc
 
