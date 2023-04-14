@@ -1,16 +1,9 @@
-section .boot
+section .text
 bits 16
 global _start
 _start:
     ; disable external interrupts
     cli
-
-    ; save the disk number
-    mov [disk], dl
-
-    ; clear the screen
-    mov ax, 0x3
-    int 0x10
 
     ; initialise the segment registers to 0
     xor ax, ax
@@ -20,8 +13,15 @@ _start:
     mov gs, ax
     mov ss, ax
 
+    ; save the disk number
+    mov [disk], dl
+
     ; initialise the direction flag
     cld
+
+    ; clear the screen
+    mov ax, 0x3
+    int 0x10
 
     ; setup the stack to start right below the bootsector
     ; 0x500-0x7c00 is considered conventional memory in x86
@@ -32,15 +32,15 @@ _start:
     mov si, real_mode_str
     call print_string
 
-    mov bx, 0x9000
+    mov bx, 0x7e00
     mov dl, [disk]
-    mov dh, 2
+    mov dh, 1
     call load_stage2
 
     mov si, disk_success_str
     call print_string
 
-    jmp 0x0000:0x9000
+    jmp 0x0000:0x7e00
     
 load_stage2:
     pusha

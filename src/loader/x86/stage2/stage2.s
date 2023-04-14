@@ -1,3 +1,4 @@
+section .text
 _start:
     mov ax, cs
     mov ds, ax
