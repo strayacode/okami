@@ -1,20 +1,19 @@
-BUILDDIR := build
-CC := clang
-ASM := nasm
-LD := ld.lld
-QEMU := qemu-system-i386
+TOOLCHAIN ?= gcc
+ARCH ?= riscv64
+QEMU := qemu-system-$(ARCH)
+BUILD := build
+BINARY := kernel.elf
 
-CFLAGS := -m32 -target i386-none-elf -ffreestanding -Wall -Wextra -nostdlib -c -Isrc/
-ASMFLAGS := -f elf
-LDFLAGS := -T src/kernel/linker.ld --oformat=elf
-QEMUFLAGS := -vga std -kernel
+CFLAGS := -Wall -Wextra -c
+LDFLAGS := -T meta/scripts/$(ARCH).ld
+QEMUFLAGS := -kernel $(BUILD)/$(BINARY)
 
-ARCH := x86
+include meta/toolchains/$(TOOLCHAIN).mk
+include meta/scripts/qemu-$(ARCH).mk
+include src/kernel/kernel.mk
 
-include src/kernel/Makefile
-
-OFILES := $(patsubst %.c,$(BUILDDIR)/%.c.o,$(CFILES))
-OFILES += $(patsubst %.s,$(BUILDDIR)/%.s.o,$(SFILES))
+OFILES := $(patsubst %.c,$(BUILD)/%.c.o,$(CFILES))
+OFILES += $(patsubst %.s,$(BUILD)/%.s.o,$(SFILES))
 DIRS := $(dir $(CFILES) $(SFILES))
 
 .SILENT: create_build_dirs
@@ -22,23 +21,23 @@ DIRS := $(dir $(CFILES) $(SFILES))
 all: create_build_dirs kernel 
 
 kernel: $(OFILES)
-	$(LD) $(LDFLAGS) $^ -o $(BUILDDIR)/kernel.elf
+	$(LD) -o $(BUILD)/$(BINARY) $(LDFLAGS) $^ 
 
 create_build_dirs:
-	mkdir -p $(BUILDDIR); \
+	mkdir -p $(BUILD); \
 	for dir in $(DIRS); \
 	do \
-	mkdir -p $(BUILDDIR)/$$dir; \
+	mkdir -p $(BUILD)/$$dir; \
 	done
 
-$(BUILDDIR)/%.s.o: %.s
-	$(ASM) $(ASMFLAGS) $< -o $@ 
+$(BUILD)/%.s.o: %.s
+	$(AS) -c $< -o $@ 
 
-$(BUILDDIR)/%.c.o: %.c
+$(BUILD)/%.c.o: %.c
 	$(CC) $(CFLAGS) $< -o $@
 
 qemu:
-	$(QEMU) $(QEMUFLAGS) $(BUILDDIR)/kernel.elf
+	$(QEMU) $(QEMUFLAGS)
 
 clean:
-	rm -r $(BUILDDIR)
+	rm -r $(BUILD)

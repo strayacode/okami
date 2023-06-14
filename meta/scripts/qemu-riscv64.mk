@@ -1,0 +1,1 @@
+QEMUFLAGS += -machine virt -cpu rv64 -m 128M -bios none -serial mon:stdio
